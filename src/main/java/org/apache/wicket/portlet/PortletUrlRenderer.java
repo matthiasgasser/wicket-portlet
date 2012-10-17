@@ -7,13 +7,15 @@ import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Url;
 import org.apache.wicket.request.UrlRenderer;
 import org.apache.wicket.util.lang.Args;
+import org.apache.wicket.util.string.Strings;
 
 public class PortletUrlRenderer extends UrlRenderer
 {
-
+   Request r;
   public PortletUrlRenderer(Request request)
   {
     super(request);
+    this.r = request;
   }
   
   public String renderRelativeUrl(final Url url)
@@ -67,9 +69,7 @@ public class PortletUrlRenderer extends UrlRenderer
     if (!renderedUrl.startsWith(".."))
     {
       // WICKET-4260
-      if(renderedUrl.startsWith("/"))
-        renderedUrl = "." + renderedUrl;
-      else
+      if(!renderedUrl.startsWith("/"))
         renderedUrl = "./" + renderedUrl;
     }
     if (renderedUrl.endsWith(".."))
@@ -78,6 +78,28 @@ public class PortletUrlRenderer extends UrlRenderer
       renderedUrl = renderedUrl + '/';
     }
     return renderedUrl;
+  }
+  
+  
+  @Override
+  protected boolean shouldRenderAsFull(Url url)
+  {
+    Url clientUrl = r.getClientUrl();
+
+    if (!Strings.isEmpty(url.getProtocol()) &&
+      !url.getProtocol().equals(clientUrl.getProtocol()))
+    {
+      return true;
+    }
+    if (!Strings.isEmpty(url.getHost()) && !url.getHost().equals(clientUrl.getHost()))
+    {
+      return true;
+    }
+    if ((url.getPort() != null) && !url.getPort().equals(clientUrl.getPort()))
+    {
+      return true;
+    }
+    return false;
   }
 
 }
