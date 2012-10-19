@@ -56,13 +56,15 @@ public class PortletUrlRenderer extends UrlRenderer
     {
       newSegments.add(".");
     }
-    else
-    {
-      for (int i = common + 1; i < baseUrlSize; ++i)
-      {
-        newSegments.add("..");
-      }
-    }
+    
+// segments that are added shouldn't be as all urls are already based on the full URL
+//    else
+//    {
+//      for (int i = common + 1; i < baseUrlSize; ++i)
+//      {
+//        newSegments.add("..");
+//      }
+//    }
     newSegments.addAll(urlSegments);
 
     String renderedUrl = new Url(newSegments, url.getQueryParameters()).toString();
@@ -78,28 +80,6 @@ public class PortletUrlRenderer extends UrlRenderer
       renderedUrl = renderedUrl + '/';
     }
     return renderedUrl;
-  }
-  
-  
-  @Override
-  protected boolean shouldRenderAsFull(Url url)
-  {
-    Url clientUrl = r.getClientUrl();
-
-    if (!Strings.isEmpty(url.getProtocol()) &&
-      !url.getProtocol().equals(clientUrl.getProtocol()))
-    {
-      return true;
-    }
-    if (!Strings.isEmpty(url.getHost()) && !url.getHost().equals(clientUrl.getHost()))
-    {
-      return true;
-    }
-    if ((url.getPort() != null) && !url.getPort().equals(clientUrl.getPort()))
-    {
-      return true;
-    }
-    return false;
   }
 
 }
